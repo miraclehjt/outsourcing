@@ -16,6 +16,7 @@ return [
             "class" => 'mdm\admin\Module',
         ],
     ],
+    'language' => 'zh-CN',
     "aliases" => [
         "@mdm/admin" => '@vendor/mdmsoft/yii2-admin',
     ],

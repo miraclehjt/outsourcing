@@ -8,9 +8,7 @@
                 <img src="<?= $directoryAsset ?>/img/user2-160x160.jpg" class="img-circle" alt="User Image"/>
             </div>
             <div class="pull-left info">
-                <p>Alexander Pierce</p>
-
-                <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+                <p><?= yii::$app->user->identity->username ?></p>
             </div>
         </div>
 
@@ -49,23 +47,9 @@
         };
 
         echo dmstr\widgets\Menu::widget([
-                'options' => ['class' => 'sidebar-menu'],
-                'items' => [
-                    [
-                        'label' => '权限配置模块',
-                        'icon' => 'glyphicon glyphicon-briefcase',
-                        'url' => '#',
-                        'items' => mdm\admin\components\MenuHelper::getAssignedMenu(Yii::$app->user->id, null, $callBack),
-                    ],
-                    [
-                        'label' => '用户管理',
-                        'icon' => 'glyphicon glyphicon-briefcase',
-                        'url' => '#',
-                        'items' => mdm\admin\components\MenuHelper::getAssignedMenu(Yii::$app->user->id, null, $callBack),
-                    ]
-
-                ]
-            ]); ?>
+            'options' => ['class' => 'sidebar-menu'],
+            'items' => mdm\admin\components\MenuHelper::getAssignedMenu(Yii::$app->user->id, null, $callBack)
+        ]); ?>
     </section>
 
 </aside>
