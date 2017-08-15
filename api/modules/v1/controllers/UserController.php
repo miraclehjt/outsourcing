@@ -11,21 +11,7 @@ class UserController extends Base
 
     protected function exceptionalAuthenticationActions()
     {
-        return ['login', 'signup-test'];
-    }
-
-    public function actionLogin() {
-        $model = new LoginForm;
-        $model->setAttributes(Yii::$app->request->post());
-        if ($user = $model->login()) {
-            if ($user instanceof IdentityInterface) {
-                return $user->api_token;
-            } else {
-                return $user->errors;
-            }
-        } else {
-            return $model->errors;
-        }
+        return ['signup-test'];
     }
 
     /**
@@ -33,11 +19,26 @@ class UserController extends Base
      */
     public function actionProfile ()
     {
-        $user = User::findIdentityByAccessToken();
+        $user = Yii::$app->user->identity;
         return [
             'id' => $user->id,
-            'username' => $user->username,
+            'username' => $user->nickname,
         ];
+    }
+
+    /**
+     * 检查访问方法，判断访问令牌所有者是否为请求用户ID
+     * @param $action
+     * @param null $model
+     * @param array $params
+     */
+    public function checkAccess($action, $model = null, $params = [])
+    {
+        $oauthUser = Yii::$app->user->identity;
+
+        if ($oauthUser['id'] != Yii::$app->request->get('id')) {
+            throw new UnauthorizedHttpException(Yii::t('app/error', '30054'), $code = 30054);
+        }
     }
 
     /**
@@ -46,21 +47,9 @@ class UserController extends Base
      */
     public function actionSignupTest ()
     {
-        $user = new User();
-        $user->generateAuthKey();
-        $user->setPassword('123456');
-        $user->username = '111';
-        $user->email = '111@111.com';
-        $user->save(false);
-
         return [
             'code' => 0
         ];
-    }
-
-    public function actionIndex()
-    {
-        return $this->render('index');
     }
 
 }

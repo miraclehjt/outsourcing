@@ -4,6 +4,7 @@
  */
 namespace common\controllers;
 
+use filsh\yii2\oauth2server\filters\ErrorToExceptionFilter;
 use \Yii;
 use yii\base\Event;
 use yii\filters\auth\HttpBasicAuth;
@@ -11,7 +12,8 @@ use yii\filters\auth\HttpBearerAuth;
 use yii\helpers\ArrayHelper;
 use yii\rest\Controller;
 use yii\web\Response;
-use yii\filters\auth\CompositeAuth;
+// use yii\filters\auth\CompositeAuth;
+use filsh\yii2\oauth2server\filters\auth\CompositeAuth;
 use yii\filters\auth\QueryParamAuth;
 use yii\web\UnauthorizedHttpException;
 
@@ -44,14 +46,15 @@ abstract class Base extends Controller
             $behaviors['authenticator'] = [
                 'class' => CompositeAuth::className(),
                 'authMethods' => [
-                    HttpBasicAuth::className(),
-                    QueryParamAuth::className(),
-                    HttpBearerAuth::className(),
+                    ['class' => HttpBasicAuth::className()],
+                    // tokenParam这个只支持查询字符串方式
+                    ['class' => QueryParamAuth::className(), 'tokenParam' => $this->getTokenParam()],
+                    ['class' => HttpBearerAuth::className()],
                 ],
                 'except' => $this->exceptionalAuthenticationActions(),
                 'optional' => $this->optionalAuthenticationActions(),
-                // 'tokenParam' => $this->getTokenParam(),
             ];
+            $behaviors['exceptionFilter'] = ['class' => ErrorToExceptionFilter::className()];
         }
 
         return $behaviors;

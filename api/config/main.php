@@ -15,6 +15,23 @@ return [
         'v1' => [
             'class' => 'api\modules\v1\Module',
         ],
+        'oauth2' => [
+            'class' => 'filsh\yii2\oauth2server\Module',
+            'tokenParamName' => 'accessToken',
+            'tokenAccessLifetime' => 3600 * 24 * 7,
+            'storageMap' => [
+                'user_credentials' => 'common\models\User',
+            ],
+            'grantTypes' => [
+                'user_credentials' => [
+                    'class' => 'OAuth2\GrantType\UserCredentials',
+                ],
+                'refresh_token' => [
+                    'class' => 'OAuth2\GrantType\RefreshToken',
+                    'always_issue_new_refresh_token' => true
+                ]
+            ]
+        ],
     ],
     'language' => 'zh-CN',
     'components' => [
@@ -71,12 +88,13 @@ return [
             // 指定续接在URL后面的一个后缀，如 .html 之类的。仅在 enablePrettyUrl 启用时有效。
             "suffix" => "",
             "rules" => [
+                'POST oauth2/<action:\w+>' => 'oauth2/rest/<action>',
                 [
                     'class' => 'yii\rest\UrlRule',
-                    'controller' => ['v1/country', 'v1/user'],
+                    'controller' => ['v1/user'],
                     'extraPatterns' => [
-                        'POST login' => 'login',
                         'GET signup-test' => 'signup-test',
+                        'GET profile' => 'profile',
                     ]
                 ],
             ],
