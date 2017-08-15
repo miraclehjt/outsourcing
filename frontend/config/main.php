@@ -15,7 +15,7 @@ return [
     'controllerNamespace' => 'frontend\controllers',
     'components' => [
         'user' => [
-            'identityClass' => 'common\models\Administrator',
+            'identityClass' => 'backend\models\Administrator',
             'enableAutoLogin' => true,
         ],
         'log' => [

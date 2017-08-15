@@ -32,7 +32,7 @@ return [
     ],
     'components' => [
         'user' => [
-            'identityClass' => 'common\models\Administrator',
+            'identityClass' => 'backend\models\Administrator',
             'enableAutoLogin' => true,
         ],
         'db' => [

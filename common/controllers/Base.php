@@ -22,6 +22,10 @@ abstract class Base extends Controller
         return true;
     }
 
+    protected function getTokenParam() {
+        return 'access-token';
+    }
+
     public function behaviors()
     {
         $behaviors = parent::behaviors();
@@ -46,6 +50,7 @@ abstract class Base extends Controller
                 ],
                 'except' => $this->exceptionalAuthenticationActions(),
                 'optional' => $this->optionalAuthenticationActions(),
+                // 'tokenParam' => $this->getTokenParam(),
             ];
         }
 

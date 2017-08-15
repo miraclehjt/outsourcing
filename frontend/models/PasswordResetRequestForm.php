@@ -23,7 +23,7 @@ class PasswordResetRequestForm extends Model
             ['email', 'required'],
             ['email', 'email'],
             ['email', 'exist',
-                'targetClass' => '\common\models\Administrator',
+                'targetClass' => 'backend\models\Administrator',
                 'filter' => ['status' => Administrator::STATUS_ACTIVE],
                 'message' => 'There is no user with such email.'
             ],

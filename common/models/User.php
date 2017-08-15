@@ -3,6 +3,7 @@
 namespace common\models;
 
 use Yii;
+use yii\web\UnauthorizedHttpException;
 
 /**
  * This is the model class for table "{{%user}}".
@@ -81,6 +82,38 @@ class User extends \yii\db\ActiveRecord
     }
 
     public static function findIdentityByAccessToken($token, $type = null) {
+        // 如果token无效的话，
+        if(!static::apiTokenIsValid($token)) {
+            throw new UnauthorizedHttpException("token is invalid.");
+        }
+
         return static::findOne(['access_token' => $token]);
+    }
+
+    public static function findByMobile($mobile) {
+        return static::findOne(['mobile' => $mobile]);
+    }
+
+    /**
+     * 生成 api_token
+     */
+    public function generateApiToken() {
+        $this->access_token = Yii::$app->security->generateRandomString() . '_' . time();
+    }
+
+    /**
+     * 校验api_token是否有效
+     * @param $token string
+     * @return boolean
+     */
+    public static function apiTokenIsValid($token)
+    {
+        if (empty($token)) {
+            return false;
+        }
+
+        $timestamp = (int) substr($token, strrpos($token, '_') + 1);
+        $expire = Yii::$app->params['user.apiTokenExpire'];
+        return $timestamp + $expire >= time();
     }
 }
