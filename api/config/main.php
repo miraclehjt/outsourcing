@@ -12,28 +12,17 @@ return [
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
     'modules' => [
-        "admin" => [
-            "class" => 'mdm\admin\Module',
+        'v1' => [
+            'class' => 'api\modules\v1\Module',
         ],
     ],
     'language' => 'zh-CN',
-    "aliases" => [
-        "@mdm/admin" => '@vendor/mdmsoft/yii2-admin',
-    ],
-    'as access' => [
-        //ACF肯定是要加的，因为粗心导致该配置漏掉了，很是抱歉
-        'class' => 'mdm\admin\components\AccessControl',
-        'allowActions' => [
-            //这里是允许访问的action 格式 controller/action
-            // '*'  //代表所有
-            '/site/login',
-            '/site/logout'
-        ]
-    ],
     'components' => [
         'user' => [
-            'identityClass' => 'common\models\Administrator',
+            'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
+            'enableSession'=>false,
+            'loginUrl' => null
         ],
         'db' => [
             'class' => 'yii\db\Connection',
@@ -51,12 +40,10 @@ return [
                 ],
             ],
         ],
-        'errorHandler' => [
-            'errorAction' => 'site/error',
-        ],
-        "authManager" => [
-            "class" => 'yii\rbac\DbManager', //这里记得用单引号而不是双引号
-            "defaultRoles" => ["guest"],
+        'request' => [
+            'parsers' => [
+                'application/json' => 'yii\web\JsonParser',
+            ]
         ],
         "urlManager" => [
             //用于表明urlManager是否启用URL美化功能，在Yii1.1中称为path格式URL，
@@ -72,8 +59,14 @@ return [
             // 指定续接在URL后面的一个后缀，如 .html 之类的。仅在 enablePrettyUrl 启用时有效。
             "suffix" => "",
             "rules" => [
-                "<controller:\w+>/<id:\d+>"=>"<controller>/view",
-                "<controller:\w+>/<action:\w+>"=>"<controller>/<action>"
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'controller' => ['v1/country', 'v1/user'],
+                    'extraPatterns' => [
+                        'POST login' => 'login',
+                        'GET signup-test' => 'signup-test',
+                    ]
+                ],
             ],
         ],
     ],

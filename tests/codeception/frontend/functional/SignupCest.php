@@ -3,7 +3,7 @@
 namespace tests\codeception\frontend\functional;
 
 use tests\codeception\frontend\_pages\SignupPage;
-use common\models\User;
+use common\models\Administrator;
 
 class SignupCest
 {
@@ -77,7 +77,7 @@ class SignupCest
         ]);
 
         $I->expectTo('see that user is created');
-        $I->seeRecord('common\models\User', [
+        $I->seeRecord('common\models\Administrator', [
             'username' => 'tester',
             'email' => 'tester.email@example.com',
         ]);

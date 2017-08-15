@@ -3,7 +3,7 @@
 namespace tests\codeception\frontend\acceptance;
 
 use tests\codeception\frontend\_pages\SignupPage;
-use common\models\User;
+use common\models\Administrator;
 
 class SignupCest
 {
@@ -22,7 +22,7 @@ class SignupCest
      */
     public function _after($event)
     {
-        User::deleteAll([
+        Administrator::deleteAll([
             'email' => 'tester.email@example.com',
             'username' => 'tester',
         ]);
