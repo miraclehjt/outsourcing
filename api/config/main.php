@@ -21,6 +21,16 @@ return [
             'tokenAccessLifetime' => 3600 * 24 * 7,
             'storageMap' => [
                 'user_credentials' => 'common\models\User',
+                /* 其他表对应的model配置
+                'refresh_token' => 'path\to\oauth2\MongoDB',
+                'access_token' => 'path\to\oauth2\MongoDB',
+                'client' => 'path\to\oauth2\MongoDB',
+                'authorization_code' => 'path\to\oauth2\FakeStorage',
+                'client_credentials' => 'path\to\oauth2\FakeStorage',
+                'public_key' => 'path\to\oauth2\FakeStorage',
+                'jwt_bearer' => 'path\to\oauth2\FakeStorage',
+                'scope' => 'path\to\oauth2\FakeStorage',
+                */
             ],
             'grantTypes' => [
                 'user_credentials' => [
@@ -91,8 +101,9 @@ return [
                 'POST oauth2/<action:\w+>' => 'oauth2/rest/<action>',
                 [
                     'class' => 'yii\rest\UrlRule',
-                    'controller' => ['v1/user'],
+                    'controller' => ['v1/user'], // 指定控制器，一个控制器一个数组
                     'extraPatterns' => [
+                        // 配置控制器里的方法
                         'GET signup-test' => 'signup-test',
                         'GET profile' => 'profile',
                     ]

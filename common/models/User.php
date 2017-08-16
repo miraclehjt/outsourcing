@@ -5,8 +5,8 @@ namespace common\models;
 use OAuth2\Storage\UserCredentialsInterface;
 use Yii;
 use yii\db\ActiveRecord;
+use yii\db\Query;
 use yii\web\IdentityInterface;
-use yii\web\UnauthorizedHttpException;
 
 /**
  * This is the model class for table "{{%user}}".
@@ -26,6 +26,8 @@ use yii\web\UnauthorizedHttpException;
  */
 class User extends ActiveRecord implements IdentityInterface, UserCredentialsInterface
 {
+    // 单一设备登录
+    const SINGLE_LOGIN = true;
 
     public function init()
     {
@@ -109,11 +111,7 @@ class User extends ActiveRecord implements IdentityInterface, UserCredentialsInt
      * @return bool
      */
     public function validatePassword($password) {
-        if ($this->password != md5($password)) {
-            return false;
-        }
-
-        return true;
+        return Yii::$app->getSecurity()->validatePassword($password, $this->password);
     }
 
     /**
@@ -131,11 +129,29 @@ class User extends ActiveRecord implements IdentityInterface, UserCredentialsInt
 
         $oauthServer->verifyResourceRequest($oauthRequest);
 
-        $token = $oauthServer->getAccessTokenData($oauthRequest);
-        $retval = self::findOne($token['user_id']);
+        $tokenDetail = $oauthServer->getAccessTokenData($oauthRequest);
+        $retval = self::findOne($tokenDetail['user_id']);
+
+        if (self::SINGLE_LOGIN) {
+            self::singleLogin($tokenDetail['user_id'], $token);
+        }
 
         return $retval;
 
+    }
+
+    /**
+     * 单地登录
+     * @param $userid
+     * @param $token
+     * @return boolean
+     */
+    public static function singleLogin($userid = 0, $token = '') {
+        Yii::$app->db->createCommand()->delete(
+            'oauth_access_tokens',
+            "user_id = :userid and access_token != :token",
+            [':userid' => $userid, ':token' => $token]
+        )->execute();
     }
 
     /**
@@ -160,29 +176,6 @@ class User extends ActiveRecord implements IdentityInterface, UserCredentialsInt
     }
 
     /**
-     * 生成 api_token
-     */
-    public function generateApiToken() {
-        $this->access_token = Yii::$app->security->generateRandomString() . '_' . time();
-    }
-
-    /**
-     * 校验api_token是否有效
-     * @param $token string
-     * @return boolean
-     */
-    public static function apiTokenIsValid($token)
-    {
-        if (empty($token)) {
-            return false;
-        }
-
-        $timestamp = (int) substr($token, strrpos($token, '_') + 1);
-        $expire = Yii::$app->params['user.apiTokenExpire'];
-        return $timestamp + $expire >= time();
-    }
-
-    /**
      * Finds an identity by the given ID.
      * @param string|integer $id the ID to be looked for
      * @return IdentityInterface the identity object that matches the given ID.
@@ -191,7 +184,7 @@ class User extends ActiveRecord implements IdentityInterface, UserCredentialsInt
      */
     public static function findIdentity($id)
     {
-        // TODO: Implement findIdentity() method.
+        return self::findOne($id);
     }
 
     /**
