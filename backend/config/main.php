@@ -15,6 +15,9 @@ return [
         "admin" => [
             "class" => 'mdm\admin\Module',
         ],
+        "user" => [
+            "class" => 'backend\modules\user\Module',
+        ]
     ],
     'language' => 'zh-CN',
     "aliases" => [

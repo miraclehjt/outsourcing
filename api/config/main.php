@@ -1,4 +1,8 @@
 <?php
+
+use yii\filters\ContentNegotiator;
+use yii\web\Response;
+
 $params = array_merge(
     require(__DIR__ . '/../../common/config/params.php'),
     require(__DIR__ . '/../../common/config/params-local.php'),
@@ -6,11 +10,13 @@ $params = array_merge(
     require(__DIR__ . '/params-local.php')
 );
 
+$bootstrap = require(__DIR__ . '/bootstrap.php');
+
 return [
     'id' => 'app-backend',
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
-    'bootstrap' => ['log'],
+    'bootstrap' => $bootstrap,
     'modules' => [
         'v1' => [
             'class' => 'api\modules\v1\Module',
