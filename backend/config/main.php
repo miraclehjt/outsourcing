@@ -17,6 +17,9 @@ return [
         ],
         "user" => [
             "class" => 'backend\modules\user\Module',
+        ],
+        "business" => [
+            "class" => 'backend\modules\business\Module'
         ]
     ],
     'language' => 'zh-CN',
